@@ -1,0 +1,31 @@
+name: Build Element (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v1.2.0
+          submodules: recursive
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Install to staging folder
+        run: cmake --install build --config Release --prefix dist
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Element-Windows
+          path: dist
